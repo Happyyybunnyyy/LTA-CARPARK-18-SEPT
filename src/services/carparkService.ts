@@ -206,7 +206,29 @@ export function simulateRealtimeUpdate(carparks: Carpark[]): Carpark[] {
  *      ]
  *    }
  */
-export async function fetchLiveSingaporeLots(): Promise<{ success: boolean; data?: any }> {
-  // Plug your real endpoint here when ready!
-  return { success: false, data: null };
+export async function fetchLiveSingaporeLots(): Promise<{
+  success: boolean;
+  data?: any[];
+  value?: any[];
+  error?: string;
+  message?: string;
+}> {
+  try {
+    const res = await fetch('/api/carparkavailability?all=true');
+    const json = await res.json();
+    if (res.ok && json.success) {
+      return { success: true, value: json.value, data: json.value };
+    }
+    return {
+      success: false,
+      error: json.error || 'FETCH_FAILED',
+      message: json.message,
+    };
+  } catch (err: any) {
+    return {
+      success: false,
+      error: 'NETWORK_ERROR',
+      message: err.message,
+    };
+  }
 }
